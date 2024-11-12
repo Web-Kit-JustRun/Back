@@ -1,20 +1,19 @@
 package taegeuni.github.project_justrun.entity
 
 import jakarta.persistence.*
-import java.time.LocalDateTime
 
 @Entity
 @Table(name = "user")
 data class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val userId: Int = 0, // Int에서 Long으로 변경
+    val userId: Int = 0,
 
     @Column(unique = true, nullable = false, length = 50)
     val username: String,
 
     @Column(nullable = false, length = 255)
-    var password: String, // val에서 var로 변경
+    var password: String, // 비밀번호 변경을 위해 var로 설정
 
     @Column(unique = true, nullable = false, length = 100)
     val email: String,
@@ -30,7 +29,7 @@ data class User(
     val userType: UserType,
 
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
-    val rankingPoints: Int = 0,
+    var rankingPoints: Int = 0, // 랭킹 포인트 업데이트를 위해 var로 설정
 
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
     val rewardPoints: Int = 0

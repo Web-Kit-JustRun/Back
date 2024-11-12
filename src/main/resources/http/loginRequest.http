@@ -3,17 +3,17 @@ POST http://localhost:8080/api/auth/login
 Content-Type: application/json
 
 {
-  "username": "test123",
-  "password": "test123"
+  "username": "btg0805",
+  "password": "btg1504"
 }
 
 
 ### 비밀번호 변경 api
 PUT http://localhost:8080/api/users/1/change-password
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxMzg5NzM4LCJleHAiOjE3MzEzOTMzMzh9.-QFaGv3VdVmjB3DUnIWe2Dghu062cdSoiQSJuDwEQ3U
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxMzk2OTM0LCJleHAiOjE3MzE0MDA1MzR9.VyfstKqxiWQ-MKrR-MLl42NA8Dr5E_6RtCmTFoeSP3E
 Content-Type: application/json
 
 {
   "currentPassword": "test123",
-  "newPassword": "test1"
+  "newPassword": "test123"
 }

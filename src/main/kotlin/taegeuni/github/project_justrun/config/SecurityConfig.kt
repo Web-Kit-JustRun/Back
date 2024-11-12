@@ -2,7 +2,6 @@ package taegeuni.github.project_justrun.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -24,9 +23,9 @@ class SecurityConfig(
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .csrf { it.disable() }
-            .authorizeRequests {
-                it.requestMatchers("/api/auth/login").permitAll()
-                    .anyRequest().authenticated()
+            .authorizeHttpRequests {
+                it.requestMatchers("/api/auth/login").permitAll()  // 로그인 경로는 인증 불필요
+                    .anyRequest().authenticated()                  // 그 외 모든 요청은 인증 필요
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
 
