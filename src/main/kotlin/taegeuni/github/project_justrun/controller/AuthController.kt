@@ -21,7 +21,7 @@ class AuthController(
             ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password")
 
         return if (passwordEncoder.matches(request.password, user.password)) {
-            val token = jwtUtil.generateToken(user.username)
+            val token = jwtUtil.generateToken(user.userId) // 수정된 부분
             val response = LoginResponse(
                 message = "Login successful.",
                 token = token,

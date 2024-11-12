@@ -1,7 +1,6 @@
 package taegeuni.github.project_justrun.entity
 
 import jakarta.persistence.*
-import org.hibernate.annotations.CreationTimestamp
 import java.time.LocalDateTime
 
 @Entity
@@ -9,13 +8,13 @@ import java.time.LocalDateTime
 data class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val userId: Int = 0,
+    val userId: Int = 0, // Int에서 Long으로 변경
 
     @Column(unique = true, nullable = false, length = 50)
     val username: String,
 
     @Column(nullable = false, length = 255)
-    val password: String,
+    var password: String, // val에서 var로 변경
 
     @Column(unique = true, nullable = false, length = 100)
     val email: String,
@@ -41,4 +40,3 @@ enum class UserType {
     student, // 소문자로 정의
     professor // 소문자로 정의
 }
-

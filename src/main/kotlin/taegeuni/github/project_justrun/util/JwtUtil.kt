@@ -12,12 +12,12 @@ class JwtUtil(
     @Value("\${jwt.secret}") private val secretKey: String
 ) {
 
-    fun generateToken(username: String): String {
+    fun generateToken(userId: Int): String {
         val now = Date()
         val expiryDate = Date(now.time + 3600000) // 유효기간: 1시간
 
         return Jwts.builder()
-            .setSubject(username)
+            .setSubject(userId.toString()) // userId를 sub 필드에 저장
             .setIssuedAt(now)
             .setExpiration(expiryDate)
             .signWith(Keys.hmacShaKeyFor(secretKey.toByteArray()), SignatureAlgorithm.HS256)
@@ -29,16 +29,20 @@ class JwtUtil(
             Jwts.parserBuilder().setSigningKey(secretKey.toByteArray()).build().parseClaimsJws(token)
             true
         } catch (ex: Exception) {
+            println("Invalid JWT token: ${ex.message}")  // 유효성 검사 실패 원인 로그
             false
         }
     }
 
-    fun getUsernameFromToken(token: String): String {
-        return Jwts.parserBuilder()
+
+    fun getUserIdFromToken(token: String): Int {
+        val claims = Jwts.parserBuilder()
             .setSigningKey(secretKey.toByteArray())
             .build()
             .parseClaimsJws(token)
             .body
-            .subject
+        println("Extracted userId from token: ${claims.subject}")  // 디버그용 출력
+        return claims.subject.toInt()
     }
+
 }
