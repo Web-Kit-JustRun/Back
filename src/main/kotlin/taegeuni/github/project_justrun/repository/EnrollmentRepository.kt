@@ -1,0 +1,8 @@
+package taegeuni.github.project_justrun.repository
+
+import org.springframework.data.jpa.repository.JpaRepository
+import taegeuni.github.project_justrun.entity.Enrollment
+
+interface EnrollmentRepository : JpaRepository<Enrollment, Int> {
+    fun findAllByUserUserId(userId: Int): List<Enrollment>
+}

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*
 import taegeuni.github.project_justrun.dto.PasswordChangeRequest
 import taegeuni.github.project_justrun.exception.ForbiddenException
 import taegeuni.github.project_justrun.service.AuthService
+import taegeuni.github.project_justrun.service.CourseService
 import taegeuni.github.project_justrun.service.UserService
 import taegeuni.github.project_justrun.util.JwtUtil
 
@@ -15,6 +16,7 @@ class UserController(
     private val authService: AuthService,
     private val jwtUtil: JwtUtil,
     private val userService: UserService,
+    private val courseService: CourseService,
 ) {
 
     @PutMapping("/{userId}/change-password")
@@ -59,5 +61,16 @@ class UserController(
 
         val rankingData = userService.getUserRanking(userId)
         return ResponseEntity.ok(rankingData)
+    }
+
+    @GetMapping("/{userId}/courses")
+    fun getUserCourses(
+        @PathVariable userId: Int,
+        httpRequest: HttpServletRequest
+    ): ResponseEntity<List<Map<String, Any>>> {
+        // 여기에 인증 및 권한 검증 코드 추가
+
+        val courses = courseService.getCoursesForUser(userId)
+        return ResponseEntity.ok(courses)
     }
 }

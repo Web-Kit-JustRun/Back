@@ -1,3 +1,3 @@
 ###랭킹 요청
-GET http://localhost:8080/api/users/2/ranking
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzMxMzk5NTk4LCJleHAiOjE3MzE0MDMxOTh9.05FmLhjhScUNL-IfXaXQbk3KTXa21qwdSfPEeKK5owA
+GET http://localhost:8080/api/users/1/ranking
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxNDY0MDY5LCJleHAiOjE3MzE0Njc2Njl9.Ptf4H90dJby8J5Y1hDiPeRI1Ndgo6XbZ-_nEmHW_WMg
