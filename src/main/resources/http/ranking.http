@@ -1,6 +1,6 @@
 ###랭킹 요청
-GET http://localhost:8080/api/users/1/ranking
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxNDc5MzQ4LCJleHAiOjE3MzE0ODI5NDh9.SaOsmuRBiT2Iy9o38Pnr1f0Dd1Vfn9gu97njSFNO21c
+GET http://localhost:8080/api/users/62/ranking
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MiIsImlhdCI6MTczMTQ4MjI4NiwiZXhwIjoxNzMxNDg1ODg2fQ.kBi9aETFEXyWITrivX3l71q1hTEPkjwKM6aW6Jgzb0E
 
 ###상위 10명 랭킹
 GET http://localhost:8080/api/ranking/top
