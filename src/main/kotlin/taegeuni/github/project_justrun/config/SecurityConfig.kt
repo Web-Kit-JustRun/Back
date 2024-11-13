@@ -24,7 +24,7 @@ class SecurityConfig(
         http
             .csrf { it.disable() }
             .authorizeHttpRequests {
-                it.requestMatchers("/api/auth/login").permitAll()  // 로그인 경로는 인증 불필요
+                it.requestMatchers("/api/auth/login","/api/ranking/top").permitAll()  // 로그인 경로는 인증 불필요
                     .anyRequest().authenticated()                  // 그 외 모든 요청은 인증 필요
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
