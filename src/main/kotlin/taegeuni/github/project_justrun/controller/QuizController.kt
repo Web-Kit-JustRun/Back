@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import taegeuni.github.project_justrun.dto.QuizRequest
 import taegeuni.github.project_justrun.dto.QuizResponse
+import taegeuni.github.project_justrun.dto.QuizSummary
 import taegeuni.github.project_justrun.service.QuizService
 import taegeuni.github.project_justrun.util.JwtUtil
 
@@ -36,5 +37,15 @@ class QuizController(
         val user = quizService.getUserById(userId)
         val response = quizService.createQuiz(user, courseId, quizRequest)
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
+    }
+
+    @GetMapping("/courses/{courseId}/quizzes")
+    fun getApprovedQuizzesByCourse(
+        @PathVariable courseId: Int,
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<List<QuizSummary>> {
+        val userId = jwtUtil.getUserIdFromToken(token.substring(7))
+        val quizzes = quizService.getApprovedQuizzesByCourse(userId, courseId)
+        return ResponseEntity.ok(quizzes)
     }
 }

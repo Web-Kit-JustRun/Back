@@ -16,4 +16,12 @@ interface QuizRepository : JpaRepository<Quiz, Int> {
         ORDER BY q.creationDate DESC
     """)
     fun findApprovedQuizzesForUser(@Param("userId") userId: Int): List<Quiz>
+
+    @Query("""
+        SELECT q FROM Quiz q 
+        WHERE q.course.courseId = :courseId 
+        AND q.status = 'approved'
+        ORDER BY q.creationDate DESC
+    """)
+    fun findApprovedQuizzesByCourseId(@Param("courseId") courseId: Int): List<Quiz>
 }

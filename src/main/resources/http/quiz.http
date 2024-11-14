@@ -18,3 +18,7 @@ Content-Type: application/json
   ],
   "correctChoice": 2
 }
+
+###퀴즈 조회
+GET http://localhost:8080/api/courses/1/quizzes
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxNTUxNjAzLCJleHAiOjE3MzE1NTUyMDN9.Tw3hE4ghgJZeOel2nP7f_eEv6HbCfnWhw2jXNq_U_dI
