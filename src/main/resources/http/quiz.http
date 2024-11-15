@@ -22,3 +22,11 @@ Content-Type: application/json
 ###퀴즈 조회
 GET http://localhost:8080/api/courses/1/quizzes
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxNTUxNjAzLCJleHAiOjE3MzE1NTUyMDN9.Tw3hE4ghgJZeOel2nP7f_eEv6HbCfnWhw2jXNq_U_dI
+
+###허가대기중인 퀴즈들 확인
+GET http://localhost:8080/api/courses/1/quizzes/pending
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzMxNjUyMjgxLCJleHAiOjE3MzE2NTU4ODF9.BJ2Ba5bz3Enq6OmSZ9Z6p1NRofvvavLB3M6gFw4dI6c
+
+###허가 대기중인 퀴즈들 중 하나 선택시 상세정보 확인
+GET http://localhost:8080/api/courses/1/quizzes/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzIiwiaWF0IjoxNzMxNjUzNDUzLCJleHAiOjE3MzE2NTcwNTN9.43zOcEC6W7p_MMvxZx6O6CWe-kd3iXSbIe6H6V5PG1A

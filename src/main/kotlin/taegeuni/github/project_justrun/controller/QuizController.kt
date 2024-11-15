@@ -4,9 +4,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
-import taegeuni.github.project_justrun.dto.QuizRequest
-import taegeuni.github.project_justrun.dto.QuizResponse
-import taegeuni.github.project_justrun.dto.QuizSummary
+import taegeuni.github.project_justrun.dto.*
 import taegeuni.github.project_justrun.service.QuizService
 import taegeuni.github.project_justrun.util.JwtUtil
 
@@ -47,5 +45,26 @@ class QuizController(
         val userId = jwtUtil.getUserIdFromToken(token.substring(7))
         val quizzes = quizService.getApprovedQuizzesByCourse(userId, courseId)
         return ResponseEntity.ok(quizzes)
+    }
+
+    @GetMapping("/courses/{courseId}/quizzes/pending")
+    fun getPendingQuizzesForProfessor(
+        @PathVariable courseId: Int,
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<List<PendingQuizResponse>> {
+        val userId = jwtUtil.getUserIdFromToken(token.substring(7))
+        val quizzes = quizService.getPendingQuizzesForProfessor(userId, courseId)
+        return ResponseEntity.ok(quizzes)
+    }
+
+    @GetMapping("/courses/{courseId}/quizzes/{quizId}")
+    fun getQuizDetailForProfessor(
+        @PathVariable courseId: Int,
+        @PathVariable quizId: Int,
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<QuizDetailResponse> {
+        val userId = jwtUtil.getUserIdFromToken(token.substring(7))
+        val quizDetail = quizService.getQuizDetailForProfessor(userId, courseId, quizId)
+        return ResponseEntity.ok(quizDetail)
     }
 }

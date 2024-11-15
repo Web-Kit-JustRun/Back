@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import taegeuni.github.project_justrun.entity.Quiz
+import taegeuni.github.project_justrun.entity.QuizStatus
 
 interface QuizRepository : JpaRepository<Quiz, Int> {
 
@@ -24,4 +25,17 @@ interface QuizRepository : JpaRepository<Quiz, Int> {
         ORDER BY q.creationDate DESC
     """)
     fun findApprovedQuizzesByCourseId(@Param("courseId") courseId: Int): List<Quiz>
+
+    @Query("""
+        SELECT q FROM Quiz q
+        WHERE q.course.courseId = :courseId
+        AND q.status = :status
+        ORDER BY q.creationDate DESC
+    """)
+    fun findQuizzesByCourseIdAndStatus(
+        @Param("courseId") courseId: Int,
+        @Param("status") status: QuizStatus
+    ): List<Quiz>
+
+    fun findByQuizIdAndCourseCourseId(quizId: Int, courseId: Int): Quiz?
 }

@@ -24,9 +24,13 @@ class SecurityConfig(
         http
             .csrf { it.disable() }
             .authorizeHttpRequests {
-                it.requestMatchers("/api/auth/login","/api/ranking/top").permitAll()  // 로그인 경로는 인증 불필요
+                it.requestMatchers(
+                    "/api/auth/login",
+                    "/api/ranking/top",
+                    "/images/**" // 정적 리소스 허용
+                ).permitAll()
                 it.requestMatchers("/api/quizzes/recent").authenticated()
-                    .anyRequest().authenticated()                  // 그 외 모든 요청은 인증 필요
+                    .anyRequest().authenticated()
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
 
