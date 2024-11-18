@@ -248,7 +248,7 @@ class QuizService(
         }
 
         val isCorrect = request.selectedChoice == quiz.correctChoice
-        val existingSubmission = quizSubmissionRepository.findByQuizAndStudent(quiz, user)
+        val existingSubmission = quizSubmissionRepository.findByQuizIdAndStudentId(quizId, userId)
 
         if (existingSubmission != null) {
             if (existingSubmission.isCorrect) {
@@ -316,6 +316,7 @@ class QuizService(
             )
         }
     }
+
 
 
 }

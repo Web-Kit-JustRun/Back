@@ -48,7 +48,18 @@ data class Quiz(
 
     @Column(nullable = true)
     var points: Int? = null // 포인트 업데이트를 위해 var로 수정
-)
+){
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as Quiz
+        return quizId == other.quizId
+    }
+
+    override fun hashCode(): Int {
+        return quizId.hashCode()
+    }
+}
 enum class QuizStatus {
     pending,
     rejected,

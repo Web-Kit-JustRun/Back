@@ -33,7 +33,18 @@ data class User(
 
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
     var rewardPoints: Int = 0
-)
+){
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        other as User
+        return userId == other.userId
+    }
+
+    override fun hashCode(): Int {
+        return userId.hashCode()
+    }
+}
 
 enum class UserType {
     student, // 소문자로 정의
