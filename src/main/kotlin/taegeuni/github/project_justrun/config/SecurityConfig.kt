@@ -23,16 +23,17 @@ class SecurityConfig(
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .csrf { it.disable() }
-            .authorizeHttpRequests {
-                it.requestMatchers(
-                    "/api/auth/login",
-                    "/api/ranking/top",
-                    "/images/**" // 정적 리소스 허용
-                ).permitAll()
-                it.requestMatchers("/api/quizzes/recent").authenticated()
+            .authorizeHttpRequests { auth ->
+                auth
+                    .requestMatchers(
+                        "/api/auth/login",
+                        "/api/ranking/top",
+                        "/images/**"
+                    ).permitAll()
                     .anyRequest().authenticated()
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+
 
         // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 이전에 추가
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)

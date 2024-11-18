@@ -9,12 +9,13 @@ import java.util.*
 
 @Component
 class JwtUtil(
-    @Value("\${jwt.secret}") private val secretKey: String
+    @Value("\${jwt.secret}") private val secretKey: String,
+    @Value("\${jwt.expirationTime}") private val expirationTime: Long
 ) {
 
     fun generateToken(userId: Int): String {
         val now = Date()
-        val expiryDate = Date(now.time + 3600000) // 유효기간: 1시간
+        val expiryDate = Date(now.time + expirationTime) // 만료 시간을 속성에서 가져옴
 
         return Jwts.builder()
             .setSubject(userId.toString()) // userId를 sub 필드에 저장
@@ -33,7 +34,6 @@ class JwtUtil(
             false
         }
     }
-
 
     fun getUserIdFromToken(token: String): Int {
         val claims = Jwts.parserBuilder()
