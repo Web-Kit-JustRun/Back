@@ -10,13 +10,6 @@ import taegeuni.github.project_justrun.entity.Quiz
 interface QuizSubmissionRepository : JpaRepository<QuizSubmission, Int> {
     @Query("""
         SELECT qs FROM QuizSubmission qs
-        WHERE qs.quiz = :quiz AND qs.student = :student AND qs.isCorrect = true
-    """)
-
-    fun findByQuizAndStudent(quiz: Quiz, student: User): QuizSubmission?
-
-    @Query("""
-        SELECT qs FROM QuizSubmission qs
         WHERE qs.quiz.quizId = :quizId AND qs.student.userId = :studentId
     """)
     fun findByQuizIdAndStudentId(
