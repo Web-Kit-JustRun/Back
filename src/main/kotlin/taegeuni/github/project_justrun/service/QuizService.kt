@@ -3,14 +3,8 @@ package taegeuni.github.project_justrun.service
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import taegeuni.github.project_justrun.dto.*
-import taegeuni.github.project_justrun.entity.Quiz
-import taegeuni.github.project_justrun.entity.QuizStatus
-import taegeuni.github.project_justrun.entity.User
-import taegeuni.github.project_justrun.entity.UserType
-import taegeuni.github.project_justrun.repository.CourseRepository
-import taegeuni.github.project_justrun.repository.EnrollmentRepository
-import taegeuni.github.project_justrun.repository.QuizRepository
-import taegeuni.github.project_justrun.repository.UserRepository
+import taegeuni.github.project_justrun.entity.*
+import taegeuni.github.project_justrun.repository.*
 import java.time.LocalDateTime
 
 
@@ -20,6 +14,7 @@ class QuizService(
     private val courseRepository: CourseRepository,
     private val enrollmentRepository: EnrollmentRepository,
     private val userRepository: UserRepository,
+    private val quizSubmissionRepository: QuizSubmissionRepository,
 ) {
 
     fun getRecentApprovedQuizzes(userId: Int, limit: Int): List<Map<String, Any>> {
@@ -231,5 +226,96 @@ class QuizService(
             throw IllegalArgumentException("isApprove 필드는 'approve' 또는 'reject'여야 합니다.")
         }
     }
+
+    @Transactional
+    fun attemptQuiz(userId: Int, quizId: Int, request: QuizAttemptRequest): QuizAttemptResponse {
+        val user = userRepository.findById(userId)
+            .orElseThrow { NoSuchElementException("사용자를 찾을 수 없습니다.") }
+
+        if (user.userType != UserType.student) {
+            throw IllegalAccessException("학생만 퀴즈를 풀 수 있습니다.")
+        }
+
+        val quiz = quizRepository.findById(quizId)
+            .orElseThrow { NoSuchElementException("퀴즈를 찾을 수 없습니다.") }
+
+        if (quiz.status != QuizStatus.approved) {
+            throw IllegalAccessException("승인된 퀴즈만 풀 수 있습니다.")
+        }
+
+        if (request.selectedChoice !in 1..4) {
+            throw IllegalArgumentException("선택한 답안 번호는 1에서 4 사이여야 합니다.")
+        }
+
+        val isCorrect = request.selectedChoice == quiz.correctChoice
+        val existingSubmission = quizSubmissionRepository.findByQuizAndStudent(quiz, user)
+
+        if (existingSubmission != null) {
+            if (existingSubmission.isCorrect) {
+                // 이미 정답을 맞췄으므로 더 이상 업데이트하지 않음
+                return QuizAttemptResponse(
+                    isCorrect = true,
+                    message = "이미 정답을 맞췄습니다.",
+                    pointsAwarded = 0
+                )
+            } else {
+                // 기존 제출 기록 업데이트
+                existingSubmission.selectedChoice = request.selectedChoice
+                existingSubmission.isCorrect = isCorrect
+                existingSubmission.submissionDate = LocalDateTime.now()
+
+                var pointsAwarded = 0
+                if (isCorrect) {
+                    val points = quiz.points ?: 0
+                    user.rankingPoints += points
+                    user.rewardPoints += points
+                    userRepository.save(user)
+
+                    existingSubmission.pointsAwarded = true
+                    pointsAwarded = points
+                }
+
+                quizSubmissionRepository.save(existingSubmission)
+
+                val message = if (isCorrect) "Correct answer!" else "Incorrect answer."
+                return QuizAttemptResponse(
+                    isCorrect = isCorrect,
+                    message = message,
+                    pointsAwarded = pointsAwarded
+                )
+            }
+        } else {
+            // 제출 기록이 없으면 새로 생성
+            var pointsAwarded = 0
+            val submission = QuizSubmission(
+                quiz = quiz,
+                student = user,
+                selectedChoice = request.selectedChoice,
+                isCorrect = isCorrect,
+                submissionDate = LocalDateTime.now(),
+                pointsAwarded = false
+            )
+
+            if (isCorrect) {
+                val points = quiz.points ?: 0
+                user.rankingPoints += points
+                user.rewardPoints += points
+                userRepository.save(user)
+
+                submission.pointsAwarded = true
+                pointsAwarded = points
+            }
+
+            quizSubmissionRepository.save(submission)
+
+            val message = if (isCorrect) "Correct answer!" else "Incorrect answer."
+            return QuizAttemptResponse(
+                isCorrect = isCorrect,
+                message = message,
+                pointsAwarded = pointsAwarded
+            )
+        }
+    }
+
 
 }

@@ -78,4 +78,15 @@ class QuizController(
         val response = quizService.approveOrRejectQuiz(userId, quizId, request)
         return ResponseEntity.ok(response)
     }
+
+    @PostMapping("/quizzes/{quizId}/attempt")
+    fun attemptQuiz(
+        @PathVariable quizId: Int,
+        @Validated @RequestBody request: QuizAttemptRequest,
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<QuizAttemptResponse> {
+        val userId = jwtUtil.getUserIdFromToken(token.substring(7))
+        val response = quizService.attemptQuiz(userId, quizId, request)
+        return ResponseEntity.ok(response)
+    }
 }

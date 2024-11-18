@@ -21,7 +21,7 @@ Content-Type: application/json
 
 ###퀴즈 조회
 GET http://localhost:8080/api/courses/1/quizzes
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxNTUxNjAzLCJleHAiOjE3MzE1NTUyMDN9.Tw3hE4ghgJZeOel2nP7f_eEv6HbCfnWhw2jXNq_U_dI
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxOTAzMzk0LCJleHAiOjE3MzE5MDY5OTR9.654D4-i5lAMLZfuJfronFLodFo1NoeOzE9tfCtjL-pM
 
 ###허가대기중인 퀴즈들 확인
 GET http://localhost:8080/api/courses/1/quizzes/pending
@@ -39,4 +39,13 @@ Content-Type: application/json
 {
   "isApprove" : "approve",
   "points": 100
+}
+
+###퀴즈 풀기
+POST http://localhost:8080/api/quizzes/1/attempt
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzMxOTAzOTE1LCJleHAiOjE3MzE5MDc1MTV9.4faVftqGJuLm3Q-N8sAIsxl4wl6onn6nPwUkT3aGz60
+Content-Type: application/json
+
+{
+  "selected_choice": 1
 }
