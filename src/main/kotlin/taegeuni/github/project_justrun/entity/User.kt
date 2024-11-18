@@ -32,7 +32,7 @@ data class User(
     var rankingPoints: Int = 0, // 랭킹 포인트 업데이트를 위해 var로 설정
 
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
-    val rewardPoints: Int = 0
+    var rewardPoints: Int = 0
 )
 
 enum class UserType {

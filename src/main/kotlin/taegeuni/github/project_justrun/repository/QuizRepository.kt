@@ -38,4 +38,6 @@ interface QuizRepository : JpaRepository<Quiz, Int> {
     ): List<Quiz>
 
     fun findByQuizIdAndCourseCourseId(quizId: Int, courseId: Int): Quiz?
+
+    fun findByQuizIdAndStatus(quizId: Int, status: QuizStatus): Quiz?
 }

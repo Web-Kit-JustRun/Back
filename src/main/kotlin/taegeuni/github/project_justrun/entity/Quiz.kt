@@ -44,7 +44,10 @@ data class Quiz(
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    val status: QuizStatus = QuizStatus.pending
+    var status: QuizStatus = QuizStatus.pending,
+
+    @Column(nullable = true)
+    var points: Int? = null // 포인트 업데이트를 위해 var로 수정
 )
 enum class QuizStatus {
     pending,

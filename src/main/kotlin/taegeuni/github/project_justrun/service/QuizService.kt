@@ -178,4 +178,58 @@ class QuizService(
         )
     }
 
+    @Transactional
+    fun approveOrRejectQuiz(
+        userId: Int,
+        quizId: Int,
+        request: QuizApprovalRequest
+    ): QuizApprovalResponse {
+        // 1. 사용자 조회 및 권한 확인
+        val user = userRepository.findById(userId)
+            .orElseThrow { NoSuchElementException("사용자를 찾을 수 없습니다.") }
+
+        if (user.userType != UserType.professor) {
+            throw IllegalAccessException("교수 권한이 필요합니다.")
+        }
+
+        // 2. 퀴즈 조회 및 상태 확인
+        val quiz = quizRepository.findByQuizIdAndStatus(quizId, QuizStatus.pending)
+            ?: throw NoSuchElementException("대기 중인 퀴즈를 찾을 수 없습니다.")
+
+        // 3. 사용자가 해당 강의의 교수인지 확인
+        val course = quiz.course
+        if (course.professor.userId != userId) {
+            throw IllegalAccessException("해당 퀴즈에 대한 권한이 없습니다.")
+        }
+
+        // 4. 승인 또는 거절 처리
+        return if (request.isApprove == "approve") {
+            if (request.points == null || request.points <= 0) {
+                throw IllegalArgumentException("승인 시에는 유효한 포인트가 필요합니다.")
+            }
+
+            // 퀴즈 상태 업데이트
+            quiz.status = QuizStatus.approved
+            quiz.points = request.points
+            quizRepository.save(quiz)
+
+            // 학생의 포인트 업데이트
+            val creator = quiz.creator
+            creator.rankingPoints += request.points
+            creator.rewardPoints += request.points
+            userRepository.save(creator)
+
+            QuizApprovalResponse(message = "Quiz approved successfully.")
+        } else if (request.isApprove == "reject") {
+            // 퀴즈 상태 업데이트
+            quiz.status = QuizStatus.rejected
+            quiz.points = null
+            quizRepository.save(quiz)
+
+            QuizApprovalResponse(message = "Quiz rejected successfully.")
+        } else {
+            throw IllegalArgumentException("isApprove 필드는 'approve' 또는 'reject'여야 합니다.")
+        }
+    }
+
 }
