@@ -43,7 +43,7 @@ Content-Type: application/json
 
 ###퀴즈 풀기
 POST http://localhost:8080/api/quizzes/1/attempt
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxOTA3MjAyLCJleHAiOjE3MzE5MTA4MDJ9.c2esziGxn8jxsNTOuPc7AFGx7N_WyTnh3MN-18oN5Cc
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxOTE4Nzg0LCJleHAiOjE3MzE5MjIzODR9.UmqEhY6-t958_ZjzYnLQgi13LBetv7hix-1lAAhJXSU
 Content-Type: application/json
 
 {
