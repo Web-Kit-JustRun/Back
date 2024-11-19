@@ -18,3 +18,7 @@ Content-Type: application/json
 {
   "quantity": 1
 }
+
+###구매내역 조회
+GET http://localhost:8080/api/users/1/purchases
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMyMDAyMDAzLCJleHAiOjE3MzIwMDU2MDN9.OaA9uUVfUf3eaRrPzJFWY8DGJM1VcIggGBi-qOMJTIw

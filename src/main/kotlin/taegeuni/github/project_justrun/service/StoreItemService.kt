@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
+import taegeuni.github.project_justrun.dto.PurchaseHistoryResponseItem
 import taegeuni.github.project_justrun.dto.PurchaseRequest
 import taegeuni.github.project_justrun.dto.PurchaseResponse
 import taegeuni.github.project_justrun.dto.StoreItemResponse
@@ -38,6 +39,7 @@ class StoreItemService(
         return items.map { it.toResponse() }
     }
 
+    //아이템 구매
     @Transactional
     fun purchaseItem(userId: Int, itemId: Int, request: PurchaseRequest): PurchaseResponse {
         // 1. 사용자 조회
@@ -80,4 +82,33 @@ class StoreItemService(
         )
     }
 
+    //구매내역 조회
+    @Transactional(readOnly = true)
+    fun getPurchaseHistory(requestingUserId: Int, targetUserId: Int): List<PurchaseHistoryResponseItem> {
+        // 1. 다른 사용자의 구매 내역 조회 방지
+        if (requestingUserId != targetUserId) {
+            throw IllegalAccessException("다른 사용자의 구매 내역은 조회할 수 없습니다.")
+        }
+
+        // 2. 사용자 존재 여부 확인
+        val user = userRepository.findById(targetUserId)
+            .orElseThrow { NoSuchElementException("사용자를 찾을 수 없습니다.") }
+
+        // 3. 구매 내역 조회
+        val purchases = purchaseRepository.findByUserId(targetUserId)
+
+        // 4. 응답 생성
+        return purchases.map { purchase ->
+            PurchaseHistoryResponseItem(
+                purchaseId = purchase.purchaseId,
+                itemName = purchase.item.itemName,
+                purchaseDate = purchase.purchaseDate,
+                itemType = purchase.item.itemType,
+                price = purchase.price,
+                quantity = purchase.quantity,
+                totalPrice = purchase.totalPrice,
+                isUsed = purchase.isUsed
+            )
+        }
+    }
 }

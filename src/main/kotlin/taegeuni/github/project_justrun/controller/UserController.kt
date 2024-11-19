@@ -4,9 +4,11 @@ import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import taegeuni.github.project_justrun.dto.PasswordChangeRequest
+import taegeuni.github.project_justrun.dto.PurchaseHistoryResponseItem
 import taegeuni.github.project_justrun.exception.ForbiddenException
 import taegeuni.github.project_justrun.service.AuthService
 import taegeuni.github.project_justrun.service.CourseService
+import taegeuni.github.project_justrun.service.StoreItemService
 import taegeuni.github.project_justrun.service.UserService
 import taegeuni.github.project_justrun.util.JwtUtil
 
@@ -16,6 +18,7 @@ class UserController(
     private val authService: AuthService,
     private val jwtUtil: JwtUtil,
     private val userService: UserService,
+    private val storeItemService: StoreItemService,
     private val courseService: CourseService,
 ) {
 
@@ -72,5 +75,17 @@ class UserController(
 
         val courses = courseService.getCoursesForUser(userId)
         return ResponseEntity.ok(courses)
+    }
+
+    //구매내역 조회
+    @GetMapping("/{userId}/purchases")
+    fun getPurchaseHistory(
+        @PathVariable userId: Int,
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<List<PurchaseHistoryResponseItem>> {
+        val requestingUserId = jwtUtil.getUserIdFromToken(token.substring(7))
+
+        val purchaseHistory = storeItemService.getPurchaseHistory(requestingUserId, userId)
+        return ResponseEntity.ok(purchaseHistory)
     }
 }

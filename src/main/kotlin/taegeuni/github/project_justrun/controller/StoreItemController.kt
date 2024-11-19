@@ -36,6 +36,7 @@ class StoreItemController(
         return ResponseEntity.ok(items)
     }
 
+    //아이템 구매
     @PostMapping("/items/{itemId}/purchase")
     fun purchaseItem(
         @PathVariable itemId: Int,
