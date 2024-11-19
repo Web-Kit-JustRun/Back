@@ -1,17 +1,19 @@
 package taegeuni.github.project_justrun.controller
 
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.*
+import taegeuni.github.project_justrun.dto.PurchaseRequest
+import taegeuni.github.project_justrun.dto.PurchaseResponse
 import taegeuni.github.project_justrun.dto.StoreItemResponse
 import taegeuni.github.project_justrun.service.StoreItemService
+import taegeuni.github.project_justrun.util.JwtUtil
 
 @RestController
 @RequestMapping("/api/store")
 class StoreItemController(
-    private val storeItemService: StoreItemService
+    private val storeItemService: StoreItemService,
+    private val jwtUtil: JwtUtil
 ) {
     //전체 아이템 조회
     @GetMapping("/items")
@@ -33,4 +35,16 @@ class StoreItemController(
         val items = storeItemService.getItemsByType(itemType)
         return ResponseEntity.ok(items)
     }
+
+    @PostMapping("/items/{itemId}/purchase")
+    fun purchaseItem(
+        @PathVariable itemId: Int,
+        @Validated @RequestBody request: PurchaseRequest,
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<PurchaseResponse> {
+        val userId = jwtUtil.getUserIdFromToken(token.substring(7))
+        val response = storeItemService.purchaseItem(userId, itemId, request)
+        return ResponseEntity.ok(response)
+    }
+
 }
