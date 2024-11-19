@@ -12,4 +12,7 @@ class StoreItemService(
         val items = storeItemRepository.findAll()
         return items.map { it.toResponse() }
     }
+    fun getAllItemTypes(): List<String> {
+        return storeItemRepository.findDistinctItemTypes()
+    }
 }

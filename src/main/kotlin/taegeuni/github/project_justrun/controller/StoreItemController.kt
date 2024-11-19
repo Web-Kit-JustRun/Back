@@ -17,4 +17,9 @@ class StoreItemController(
         val items = storeItemService.getAllItems()
         return ResponseEntity.ok(items)
     }
+    @GetMapping("/item_types")
+    fun getItemTypes(): ResponseEntity<Map<String, List<String>>> {
+        val itemTypes = storeItemService.getAllItemTypes()
+        return ResponseEntity.ok(mapOf("item_types" to itemTypes))
+    }
 }
