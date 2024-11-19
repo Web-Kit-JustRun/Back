@@ -3,12 +3,12 @@ GET http://localhost:8080/api/quizzes/recent
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxNTUxNjAzLCJleHAiOjE3MzE1NTUyMDN9.Tw3hE4ghgJZeOel2nP7f_eEv6HbCfnWhw2jXNq_U_dI
 
 ###퀴즈 등록
-POST http://localhost:8080/api/courses/1/quizzes
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxNTUxNjAzLCJleHAiOjE3MzE1NTUyMDN9.Tw3hE4ghgJZeOel2nP7f_eEv6HbCfnWhw2jXNq_U_dI
+POST http://localhost:8080/api/courses/1/quizzes/add
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxOTgxNTYzLCJleHAiOjE3MzE5ODUxNjN9.DdNfKBD3foMqho0lD_tkWdYrgL4fw-wKuWwONsaojR8
 Content-Type: application/json
 
 {
-  "title": "퀴즈 제목",
+  "title": "테스트 퀴즈",
   "question": "문제 내용",
   "choices": [
     "보기 1",
@@ -20,8 +20,8 @@ Content-Type: application/json
 }
 
 ###퀴즈 조회
-GET http://localhost:8080/api/courses/1/quizzes
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxOTA3MjAyLCJleHAiOjE3MzE5MTA4MDJ9.c2esziGxn8jxsNTOuPc7AFGx7N_WyTnh3MN-18oN5Cc
+GET http://localhost:8080/api/courses/1/quizzes/list
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxOTgxNTYzLCJleHAiOjE3MzE5ODUxNjN9.DdNfKBD3foMqho0lD_tkWdYrgL4fw-wKuWwONsaojR8
 
 ###허가대기중인 퀴즈들 확인
 GET http://localhost:8080/api/courses/1/quizzes/pending

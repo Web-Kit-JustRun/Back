@@ -25,7 +25,7 @@ class QuizController(
         return ResponseEntity.ok(quizzes)
     }
 
-    @PostMapping("/courses/{courseId}/quizzes")
+    @PostMapping("/courses/{courseId}/quizzes/add")
     fun createQuiz(
         @PathVariable courseId: Int,
         @Validated @RequestBody quizRequest: QuizRequest,
@@ -37,7 +37,7 @@ class QuizController(
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 
-    @GetMapping("/courses/{courseId}/quizzes")
+    @GetMapping("/courses/{courseId}/quizzes/list")
     fun getApprovedQuizzesByCourse(
         @PathVariable courseId: Int,
         @RequestHeader("Authorization") token: String
