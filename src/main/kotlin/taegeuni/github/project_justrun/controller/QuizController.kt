@@ -38,13 +38,13 @@ class QuizController(
     }
 
     @GetMapping("/courses/{courseId}/quizzes/list")
-    fun getApprovedQuizzesByCourse(
+    fun getApprovedQuizzesWithAttemptStatus(
         @PathVariable courseId: Int,
         @RequestHeader("Authorization") token: String
-    ): ResponseEntity<List<QuizSummary>> {
+    ): ResponseEntity<List<QuizListResponseItem>> {
         val userId = jwtUtil.getUserIdFromToken(token.substring(7))
-        val quizzes = quizService.getApprovedQuizzesByCourse(userId, courseId)
-        return ResponseEntity.ok(quizzes)
+        val quizList = quizService.getApprovedQuizzesWithAttemptStatus(userId, courseId)
+        return ResponseEntity.ok(quizList)
     }
 
     @GetMapping("/courses/{courseId}/quizzes/pending")

@@ -14,4 +14,13 @@ interface QuizSubmissionRepository : JpaRepository<QuizSubmission, Int> {
         @Param("quizId") quizId: Int,
         @Param("studentId") studentId: Int
     ): QuizSubmission?
+
+    @Query("""
+        SELECT qs FROM QuizSubmission qs
+        WHERE qs.student.userId = :studentId AND qs.quiz.quizId IN :quizIds
+    """)
+    fun findByStudentIdAndQuizIds(
+        @Param("studentId") studentId: Int,
+        @Param("quizIds") quizIds: List<Int>
+    ): List<QuizSubmission>
 }

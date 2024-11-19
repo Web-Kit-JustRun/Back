@@ -21,7 +21,7 @@ Content-Type: application/json
 
 ###퀴즈 조회
 GET http://localhost:8080/api/courses/1/quizzes/list
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxOTgxNTYzLCJleHAiOjE3MzE5ODUxNjN9.DdNfKBD3foMqho0lD_tkWdYrgL4fw-wKuWwONsaojR8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxOTkzMzcwLCJleHAiOjE3MzE5OTY5NzB9.gGnZ9ilxxI-VnVlFSHRrCeW6O41JFgfpB_PuKpaoSxs
 
 ###허가대기중인 퀴즈들 확인
 GET http://localhost:8080/api/courses/1/quizzes/pending
@@ -43,7 +43,7 @@ Content-Type: application/json
 
 ###퀴즈 풀기
 POST http://localhost:8080/api/quizzes/1/attempt
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxOTE4Nzg0LCJleHAiOjE3MzE5MjIzODR9.UmqEhY6-t958_ZjzYnLQgi13LBetv7hix-1lAAhJXSU
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxOTkzMzcwLCJleHAiOjE3MzE5OTY5NzB9.gGnZ9ilxxI-VnVlFSHRrCeW6O41JFgfpB_PuKpaoSxs
 Content-Type: application/json
 
 {

@@ -78,34 +78,6 @@ class QuizService(
         )
     }
 
-    @Transactional(readOnly = true)
-    fun getApprovedQuizzesByCourse(userId: Int, courseId: Int): List<QuizSummary> {
-        // 1. 사용자 및 강의 조회
-        val user = userRepository.findById(userId)
-            .orElseThrow { NoSuchElementException("사용자를 찾을 수 없습니다.") }
-
-        val course = courseRepository.findById(courseId)
-            .orElseThrow { NoSuchElementException("강의를 찾을 수 없습니다.") }
-
-        // 2. 사용자가 해당 강의에 수강 등록되어 있는지 확인
-        val isEnrolled = enrollmentRepository.existsByUserAndCourse(user, course)
-        if (!isEnrolled) {
-            throw IllegalAccessException("해당 강의에 대한 접근 권한이 없습니다.")
-        }
-
-        // 3. 승인된 퀴즈 목록 조회
-        val quizzes = quizRepository.findApprovedQuizzesByCourseId(courseId)
-
-        // 4. DTO로 변환하여 반환
-        return quizzes.map { quiz ->
-            QuizSummary(
-                quizId = quiz.quizId,
-                title = quiz.title,
-                creationDate = quiz.creationDate,
-                status = quiz.status.name
-            )
-        }
-    }
 
     @Transactional(readOnly = true)
     fun getPendingQuizzesForProfessor(userId: Int, courseId: Int): List<PendingQuizResponse> {
@@ -303,7 +275,48 @@ class QuizService(
         )
     }
 
+    @Transactional(readOnly = true)
+    fun getApprovedQuizzesWithAttemptStatus(userId: Int, courseId: Int): List<QuizListResponseItem> {
+        // 1. 사용자 확인
+        val user = userRepository.findById(userId)
+            .orElseThrow { NoSuchElementException("사용자를 찾을 수 없습니다.") }
 
+        if (user.userType != UserType.student) {
+            throw IllegalAccessException("학생만 퀴즈 목록을 조회할 수 있습니다.")
+        }
+
+        // 2. 승인된 퀴즈 목록 조회
+        val quizzes = quizRepository.findApprovedQuizzesByCourseId(courseId)
+
+        // 3. 퀴즈 ID 목록 추출
+        val quizIds = quizzes.map { it.quizId }
+
+        // 4. 학생의 제출 기록 조회
+        val submissions = if (quizIds.isNotEmpty()) {
+            quizSubmissionRepository.findByStudentIdAndQuizIds(userId, quizIds)
+        } else {
+            emptyList()
+        }
+
+        // 5. 제출 기록을 맵으로 변환 (quizId를 키로)
+        val submissionMap = submissions.associateBy { it.quiz.quizId }
+
+        // 6. 응답 생성
+        return quizzes.map { quiz ->
+            val submission = submissionMap[quiz.quizId]
+            val attemptStatus = when {
+                submission == null -> "not_attempted"
+                submission.isCorrect -> "correct"
+                else -> "incorrect"
+            }
+            QuizListResponseItem(
+                quizId = quiz.quizId,
+                title = quiz.title,
+                creationDate = quiz.creationDate,
+                attemptStatus = attemptStatus
+            )
+        }
+    }
 
 
 }
