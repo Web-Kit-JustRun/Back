@@ -248,45 +248,30 @@ class QuizService(
         }
 
         val isCorrect = request.selectedChoice == quiz.correctChoice
+        var pointsAwarded = 0
+
         val existingSubmission = quizSubmissionRepository.findByQuizIdAndStudentId(quizId, userId)
 
         if (existingSubmission != null) {
-            if (existingSubmission.isCorrect) {
-                // 이미 정답을 맞췄으므로 더 이상 업데이트하지 않음
-                return QuizAttemptResponse(
-                    isCorrect = true,
-                    message = "이미 정답을 맞췄습니다.",
-                    pointsAwarded = 0
-                )
-            } else {
-                // 기존 제출 기록 업데이트
-                existingSubmission.selectedChoice = request.selectedChoice
-                existingSubmission.isCorrect = isCorrect
-                existingSubmission.submissionDate = LocalDateTime.now()
+            // 제출 기록 업데이트
+            existingSubmission.selectedChoice = request.selectedChoice
+            existingSubmission.isCorrect = isCorrect
+            existingSubmission.submissionDate = LocalDateTime.now()
 
-                var pointsAwarded = 0
-                if (isCorrect) {
-                    val points = quiz.points ?: 0
-                    user.rankingPoints += points
-                    user.rewardPoints += points
-                    userRepository.save(user)
+            if (isCorrect && !existingSubmission.pointsAwarded) {
+                // 최초 정답 시 포인트 지급
+                val points = quiz.points ?: 0
+                user.rankingPoints += points
+                user.rewardPoints += points
+                userRepository.save(user)
 
-                    existingSubmission.pointsAwarded = true
-                    pointsAwarded = points
-                }
-
-                quizSubmissionRepository.save(existingSubmission)
-
-                val message = if (isCorrect) "Correct answer!" else "Incorrect answer."
-                return QuizAttemptResponse(
-                    isCorrect = isCorrect,
-                    message = message,
-                    pointsAwarded = pointsAwarded
-                )
+                existingSubmission.pointsAwarded = true
+                pointsAwarded = points
             }
+
+            quizSubmissionRepository.save(existingSubmission)
         } else {
-            // 제출 기록이 없으면 새로 생성
-            var pointsAwarded = 0
+            // 새로운 제출 기록 생성
             val submission = QuizSubmission(
                 quiz = quiz,
                 student = user,
@@ -297,6 +282,7 @@ class QuizService(
             )
 
             if (isCorrect) {
+                // 최초 정답 시 포인트 지급
                 val points = quiz.points ?: 0
                 user.rankingPoints += points
                 user.rewardPoints += points
@@ -307,15 +293,16 @@ class QuizService(
             }
 
             quizSubmissionRepository.save(submission)
-
-            val message = if (isCorrect) "Correct answer!" else "Incorrect answer."
-            return QuizAttemptResponse(
-                isCorrect = isCorrect,
-                message = message,
-                pointsAwarded = pointsAwarded
-            )
         }
+
+        val message = if (isCorrect) "Correct answer!" else "Incorrect answer."
+        return QuizAttemptResponse(
+            isCorrect = isCorrect,
+            message = message,
+            pointsAwarded = pointsAwarded
+        )
     }
+
 
 
 

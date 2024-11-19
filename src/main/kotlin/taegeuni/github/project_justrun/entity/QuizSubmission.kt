@@ -33,3 +33,4 @@ data class QuizSubmission(
     @Column(nullable = false)
     var pointsAwarded: Boolean = false
 )
+
