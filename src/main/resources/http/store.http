@@ -5,3 +5,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxOTc4NDg3L
 ###아이템 목록 조회
 GET http://localhost:8080/api/store/item_types
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxOTc4NDg3LCJleHAiOjE3MzE5ODIwODd9.6YNRBwtaCVt7ig0wQAXpySjMPoS72JNQ8t0zCnq8qW4
+
+###해당 목록의 아이템 조회
+GET http://localhost:8080/api/store/items/bookcafe
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzMxOTgwMjgxLCJleHAiOjE3MzE5ODM4ODF9.U5kl503xW2lDQfxmf6UZ8kAknrR-FW3agJsR1U3Ferk

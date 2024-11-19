@@ -9,4 +9,5 @@ import taegeuni.github.project_justrun.entity.StoreItem
 interface StoreItemRepository : JpaRepository<StoreItem, Int>{
     @Query("SELECT DISTINCT s.itemType FROM StoreItem s WHERE s.itemType IS NOT NULL")
     fun findDistinctItemTypes(): List<String>
+    fun findByItemType(itemType: String): List<StoreItem>
 }
