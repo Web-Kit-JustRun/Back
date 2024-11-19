@@ -91,8 +91,8 @@ class StoreItemService(
         }
 
         // 2. 사용자 존재 여부 확인
-        val user = userRepository.findById(targetUserId)
-            .orElseThrow { NoSuchElementException("사용자를 찾을 수 없습니다.") }
+//        val user = userRepository.findById(targetUserId)
+//            .orElseThrow { NoSuchElementException("사용자를 찾을 수 없습니다.") }
 
         // 3. 구매 내역 조회
         val purchases = purchaseRepository.findByUserId(targetUserId)
