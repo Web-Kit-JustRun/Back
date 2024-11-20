@@ -27,7 +27,12 @@ class AuthController(
         }
 
         val latestStudent = userRepository.findTopByStudentNumberIsNotNullAndUserTypeOrderByUserIdDesc()
-        val studentNumber = LocalDate.now().year.toString() + String.format("%04d", latestStudent?.studentNumber?.drop(4)?.toInt()?.plus(1) ?: 1)
+
+        val latestStudentEntranceYear = latestStudent?.studentNumber?.take(4)
+        val currentYear = LocalDate.now().year.toString()
+        val isFirstStudentOfTheYear =  latestStudentEntranceYear != null && latestStudentEntranceYear != currentYear
+        val lastFourDigits = if (isFirstStudentOfTheYear) 1 else latestStudent?.studentNumber?.drop(4)?.toInt()?.plus(1) ?: 1
+        val studentNumber = currentYear + String.format("%04d",  lastFourDigits)
 
         val newUser = User(
             username = body.username,
