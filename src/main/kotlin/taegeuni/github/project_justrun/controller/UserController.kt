@@ -2,6 +2,8 @@ package taegeuni.github.project_justrun.controller
 
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 import taegeuni.github.project_justrun.dto.PasswordChangeRequest
 import taegeuni.github.project_justrun.dto.PurchaseHistoryResponseItem
@@ -87,5 +89,13 @@ class UserController(
 
         val purchaseHistory = storeItemService.getPurchaseHistory(requestingUserId, userId)
         return ResponseEntity.ok(purchaseHistory)
+    }
+
+    //스토어 사이드바에서 자신의 리워드 포인트 확인
+    @GetMapping("/reward_point")
+    fun getRewardPoint(@AuthenticationPrincipal userDetails: UserDetails): ResponseEntity<Map<String, Int>> {
+        val userId = userDetails.username.toInt()
+        val rewardPoint = userService.getRewardPoints(userId)
+        return ResponseEntity.ok(mapOf("reward_point" to rewardPoint))
     }
 }

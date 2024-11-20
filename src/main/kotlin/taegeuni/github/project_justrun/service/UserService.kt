@@ -1,5 +1,6 @@
 package taegeuni.github.project_justrun.service
 
+import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import taegeuni.github.project_justrun.entity.UserType
 import taegeuni.github.project_justrun.repository.UserRepository
@@ -27,6 +28,14 @@ class UserService(
             "ranking_points" to user.rankingPoints,
             "ranking_percentage" to rankingPercentage
         )
+    }
+
+    //스토어 사이드바에서 자신의 리워드 포인트 확인
+    fun getRewardPoints(userId: Int): Int {
+        val user = userRepository.findById(userId).orElseThrow {
+            EntityNotFoundException("User not found with id: $userId")
+        }
+        return user.rewardPoints
     }
 }
 
