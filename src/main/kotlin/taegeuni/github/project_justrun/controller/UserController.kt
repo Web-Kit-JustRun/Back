@@ -7,11 +7,9 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 import taegeuni.github.project_justrun.dto.PasswordChangeRequest
 import taegeuni.github.project_justrun.dto.PurchaseHistoryResponseItem
+import taegeuni.github.project_justrun.dto.UserQuizResponseItem
 import taegeuni.github.project_justrun.exception.ForbiddenException
-import taegeuni.github.project_justrun.service.AuthService
-import taegeuni.github.project_justrun.service.CourseService
-import taegeuni.github.project_justrun.service.StoreItemService
-import taegeuni.github.project_justrun.service.UserService
+import taegeuni.github.project_justrun.service.*
 import taegeuni.github.project_justrun.util.JwtUtil
 
 @RestController
@@ -22,6 +20,7 @@ class UserController(
     private val userService: UserService,
     private val storeItemService: StoreItemService,
     private val courseService: CourseService,
+    private val quizService: QuizService,
 ) {
 
     @PutMapping("/{userId}/change-password")
@@ -97,5 +96,16 @@ class UserController(
         val userId = userDetails.username.toInt()
         val rewardPoint = userService.getRewardPoints(userId)
         return ResponseEntity.ok(mapOf("reward_point" to rewardPoint))
+    }
+
+    //자신의 퀴즈 확인
+    @GetMapping("/{userId}/quizzes")
+    fun getUserQuizzes(
+        @PathVariable userId: Int,
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<List<UserQuizResponseItem>> {
+        val requestingUserId = jwtUtil.getUserIdFromToken(token.substring(7))
+        val userQuizzes = quizService.getUserQuizzes(requestingUserId, userId)
+        return ResponseEntity.ok(userQuizzes)
     }
 }

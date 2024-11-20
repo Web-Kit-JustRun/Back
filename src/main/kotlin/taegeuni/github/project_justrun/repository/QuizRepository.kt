@@ -40,4 +40,12 @@ interface QuizRepository : JpaRepository<Quiz, Int> {
     fun findByQuizIdAndCourseCourseId(quizId: Int, courseId: Int): Quiz?
 
     fun findByQuizIdAndStatus(quizId: Int, status: QuizStatus): Quiz?
+
+    @Query("""
+        SELECT q FROM Quiz q
+        JOIN FETCH q.course c
+        WHERE q.creator.userId = :userId
+        ORDER BY q.creationDate DESC
+    """)
+    fun findByCreatorUserIdWithCourse(@Param("userId") userId: Int): List<Quiz>
 }
