@@ -322,19 +322,15 @@ class QuizService(
     //자신의 퀴즈 확인
     @Transactional(readOnly = true)
     fun getUserQuizzes(requestingUserId: Int, targetUserId: Int): List<UserQuizResponseItem> {
-        // 1. 사용자 존재 여부 확인
-        val user = userRepository.findById(targetUserId)
-            .orElseThrow { NoSuchElementException("사용자를 찾을 수 없습니다.") }
-
-        // 2. 다른 사용자의 퀴즈 목록 조회 방지
+        // 1. 다른 사용자의 퀴즈 목록 조회 방지
         if (requestingUserId != targetUserId) {
             throw IllegalAccessException("다른 사용자의 퀴즈는 조회할 수 없습니다.")
         }
 
-        // 3. 퀴즈 목록 조회 (강의 정보 포함)
+        // 2. 퀴즈 목록 조회 (강의 정보 포함)
         val quizzes = quizRepository.findByCreatorUserIdWithCourse(targetUserId)
 
-        // 4. 응답 생성
+        // 3. 응답 생성
         return quizzes.map { quiz ->
             UserQuizResponseItem(
                 quizId = quiz.quizId,
