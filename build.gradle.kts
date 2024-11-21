@@ -15,6 +15,10 @@ java {
     }
 }
 
+springBoot {
+    mainClass = project.group.toString()
+}
+
 repositories {
     mavenCentral()
 }

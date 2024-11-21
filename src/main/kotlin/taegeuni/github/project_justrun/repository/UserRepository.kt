@@ -17,4 +17,8 @@ interface UserRepository : JpaRepository<User, Int> {
 
     @Query("SELECT COUNT(u) + 1 FROM User u WHERE u.rankingPoints > :rankingPoints AND u.userType = 'student'")
     fun findUserRank(@Param("rankingPoints") rankingPoints: Int): Long
+
+    fun findByUsernameOrEmail(username: String, password: String): User?
+
+    fun findTopByStudentNumberIsNotNullAndUserTypeOrderByUserIdDesc(userType: UserType = UserType.student): User?
 }
