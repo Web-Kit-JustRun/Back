@@ -141,9 +141,11 @@ class QuizService(
             creator = CreatorInfo(
                 userId = quiz.creator.userId,
                 name = quiz.creator.name
-            )
+            ),
+            attempt_status = "not_attempted" // 교수는 시도하지 않으므로 "not_attempted"로 설정
         )
     }
+
 
     @Transactional
     fun approveOrRejectQuiz(
@@ -343,5 +345,59 @@ class QuizService(
                 )
             )
         }
+    }
+
+    //퀴즈 상제조회
+    @Transactional(readOnly = true)
+    fun getQuizDetail(userId: Int, quizId: Int): QuizDetailResponse {
+        // 1. 사용자 조회
+        val user = userRepository.findById(userId)
+            .orElseThrow { NoSuchElementException("사용자를 찾을 수 없습니다.") }
+
+        // 2. 퀴즈 조회
+        val quiz = quizRepository.findByIdWithCreator(quizId)
+            ?: throw NoSuchElementException("퀴즈를 찾을 수 없습니다.")
+
+        // 3. 퀴즈 상태 확인
+        if (quiz.status != QuizStatus.approved) {
+            throw IllegalAccessException("승인된 퀴즈만 조회할 수 있습니다.")
+        }
+
+        // 4. 사용자 타입에 따른 correctChoice 처리
+        val correctChoice = if (user.userType == UserType.professor) {
+            quiz.correctChoice
+        } else {
+            // 학생인 경우 correctChoice를 -1로 설정
+            -1
+        }
+
+        // 5. 사용자 제출 기록 조회 및 attemptStatus 결정
+        val submission = quizSubmissionRepository.findByQuizQuizIdAndStudentUserId(quizId, userId)
+        val attemptStatus = when {
+            submission == null -> "not_attempted"
+            submission.isCorrect -> "correct"
+            else -> "incorrect"
+        }
+
+        // 6. 응답 생성
+        return QuizDetailResponse(
+            quizId = quiz.quizId,
+            title = quiz.title,
+            question = quiz.question,
+            choices = listOf(
+                quiz.choice1,
+                quiz.choice2,
+                quiz.choice3,
+                quiz.choice4
+            ),
+            correctChoice = correctChoice,
+            creationDate = quiz.creationDate,
+            status = quiz.status.name,
+            creator = CreatorInfo(
+                userId = quiz.creator.userId,
+                name = quiz.creator.name
+            ),
+            attempt_status = attemptStatus
+        )
     }
 }

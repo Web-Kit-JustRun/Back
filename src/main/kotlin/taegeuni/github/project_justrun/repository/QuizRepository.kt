@@ -48,4 +48,11 @@ interface QuizRepository : JpaRepository<Quiz, Int> {
         ORDER BY q.creationDate DESC
     """)
     fun findByCreatorUserIdWithCourse(@Param("userId") userId: Int): List<Quiz>
+
+    @Query("""
+        SELECT q FROM Quiz q
+        JOIN FETCH q.creator c
+        WHERE q.quizId = :quizId
+    """)
+    fun findByIdWithCreator(@Param("quizId") quizId: Int): Quiz?
 }

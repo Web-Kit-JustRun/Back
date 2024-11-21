@@ -89,4 +89,15 @@ class QuizController(
         val response = quizService.attemptQuiz(userId, quizId, request)
         return ResponseEntity.ok(response)
     }
+
+    //퀴즈 상세조회
+    @GetMapping("/quizzes/{quizId}")
+    fun getQuizDetail(
+        @PathVariable quizId: Int,
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<QuizDetailResponse> {
+        val userId = jwtUtil.getUserIdFromToken(token.substring(7))
+        val quizDetail = quizService.getQuizDetail(userId, quizId)
+        return ResponseEntity.ok(quizDetail)
+    }
 }
