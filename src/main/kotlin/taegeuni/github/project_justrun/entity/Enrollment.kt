@@ -10,10 +10,10 @@ data class Enrollment(
     val enrollmentId: Int = 0,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     val user: User,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "courseId", nullable = false)
+    @JoinColumn(name = "course_id", nullable = false)
     val course: Course
 )
