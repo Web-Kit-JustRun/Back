@@ -6,8 +6,11 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import taegeuni.github.project_justrun.dto.CommonResponse
 import taegeuni.github.project_justrun.dto.ErrorResponse
+import taegeuni.github.project_justrun.entity.Enrollment
 import taegeuni.github.project_justrun.entity.User
 import taegeuni.github.project_justrun.entity.UserType
+import taegeuni.github.project_justrun.repository.CourseRepository
+import taegeuni.github.project_justrun.repository.EnrollmentRepository
 import taegeuni.github.project_justrun.repository.UserRepository
 import taegeuni.github.project_justrun.util.JwtUtil
 import java.time.LocalDate
@@ -16,6 +19,8 @@ import java.time.LocalDate
 @RequestMapping("/api/auth")
 class AuthController(
     private val userRepository: UserRepository,
+    private val courseRepository: CourseRepository,
+    private val enrollmentRepository: EnrollmentRepository,
     private val jwtUtil: JwtUtil,
     private val passwordEncoder: BCryptPasswordEncoder
 ) {
@@ -42,8 +47,15 @@ class AuthController(
             userType = UserType.student,
             studentNumber = studentNumber
         )
+
+        val entireCourses = courseRepository.findAll()
+
         userRepository.save(newUser)
 
+        for (course in entireCourses) {
+            enrollmentRepository.save(Enrollment(newUser, course))
+        }
+        
         return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponse("User registered successfully"))
     }
 

@@ -1,7 +1,10 @@
 package taegeuni.github.project_justrun.controller
 
+import AssignmentDto
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import taegeuni.github.project_justrun.dto.ErrorResponse
 import taegeuni.github.project_justrun.service.AssignmentService
 import taegeuni.github.project_justrun.util.JwtUtil
 
@@ -20,5 +23,26 @@ class AssignmentController(
         val userId = jwtUtil.getUserIdFromToken(token.substring(7))
         val assignmentList = assignmentService.getAssignmentList(userId, courseId)
         return ResponseEntity.ok(assignmentList)
+    }
+
+    @GetMapping("/assignments/{assignmentId}")
+    fun getAssignment(
+        @PathVariable assignmentId: Int,
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<*> {
+        val userId = jwtUtil.getUserIdFromToken(token.substring(7))
+        val assignment = assignmentService.getAssignment(userId, assignmentId)
+            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse("Assignment not found"))
+
+        val assignmentDto = AssignmentDto(
+            assignmentId = assignment.assignmentId,
+            title = assignment.title,
+            content = assignment.content,
+            attachment = assignment.attachment,
+            attachmentName = assignment.attachmentName,
+            dueDate = assignment.dueDate,
+            courseId = assignment.course.courseId // Lazy Loading 방지
+        )
+        return ResponseEntity.ok(assignmentDto)
     }
 }
