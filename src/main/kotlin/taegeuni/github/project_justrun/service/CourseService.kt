@@ -12,8 +12,8 @@ class CourseService(
         val enrollments = enrollmentRepository.findAllByUserUserId(userId)
         return enrollments.map { enrollment ->
             mapOf(
-                "course_id" to enrollment.course.courseId,
-                "course_name" to enrollment.course.courseName
+                "courseId" to enrollment.course.courseId,
+                "courseName" to enrollment.course.courseName
             )
         }
     }
