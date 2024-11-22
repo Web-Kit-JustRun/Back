@@ -22,10 +22,10 @@ class QuizService(
             .take(limit)
             .map { quiz ->
                 mapOf(
-                    "quiz_id" to quiz.quizId,
-                    "course_name" to quiz.course.courseName,
+                    "quizId" to quiz.quizId,
+                    "courseName" to quiz.course.courseName,
                     "title" to quiz.title,
-                    "creation_date" to quiz.creationDate
+                    "creationDate" to quiz.creationDate
                 )
             }
     }
@@ -142,7 +142,7 @@ class QuizService(
                 userId = quiz.creator.userId,
                 name = quiz.creator.name
             ),
-            attempt_status = "not_attempted" // 교수는 시도하지 않으므로 "not_attempted"로 설정
+            attemptStatus = "not_attempted" // 교수는 시도하지 않으므로 "not_attempted"로 설정
         )
     }
 
@@ -397,7 +397,7 @@ class QuizService(
                 userId = quiz.creator.userId,
                 name = quiz.creator.name
             ),
-            attempt_status = attemptStatus
+            attemptStatus = attemptStatus
         )
     }
 }

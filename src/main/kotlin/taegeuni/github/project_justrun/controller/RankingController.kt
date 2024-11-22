@@ -27,14 +27,19 @@ class RankingController(
     @GetMapping
     fun getTop100AndUserRank(
         @RequestHeader("Authorization") token: String
-    ): ResponseEntity<Map<String, Any>> {
+    ): ResponseEntity<RankingData> {
         val userId = jwtUtil.getUserIdFromToken(token.substring(7))
         val user = userRepository.findById(userId).orElseThrow { IllegalArgumentException("User not found") }
 
         val top100 = rankingService.getTop100Students()
         val userRankData = rankingService.getUserRank(user)
 
-        val response = mapOf("top_100" to top100, "user_rank" to userRankData)
+        val response = RankingData(top100, userRankData)
         return ResponseEntity.ok(response)
     }
 }
+
+data class RankingData(
+    val top100: List<Map<String, Any>>,
+    val userRanking: Map<String, Any>
+)

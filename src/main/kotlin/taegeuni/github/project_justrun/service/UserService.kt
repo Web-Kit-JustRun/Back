@@ -24,9 +24,9 @@ class UserService(
         val rankingPercentage = (rankPosition.toDouble() / totalStudents)*100
 
         return mapOf(
-            "user_id" to user.userId,
-            "ranking_points" to user.rankingPoints,
-            "ranking_percentage" to rankingPercentage
+            "userId" to user.userId,
+            "rankingPoints" to user.rankingPoints,
+            "rankingPercentage" to rankingPercentage
         )
     }
 

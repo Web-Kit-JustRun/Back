@@ -11,5 +11,5 @@ data class QuizDetailResponse(
     val creationDate: LocalDateTime,
     val status: String,
     val creator: CreatorInfo,
-    val attempt_status: String // "not_attempted", "correct", "incorrect"
+    val attemptStatus: String // "not_attempted", "correct", "incorrect"
 )

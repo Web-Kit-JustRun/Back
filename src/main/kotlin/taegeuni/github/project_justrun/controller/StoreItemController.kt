@@ -26,7 +26,7 @@ class StoreItemController(
     @GetMapping("/item_types")
     fun getItemTypes(): ResponseEntity<Map<String, List<String>>> {
         val itemTypes = storeItemService.getAllItemTypes()
-        return ResponseEntity.ok(mapOf("item_types" to itemTypes))
+        return ResponseEntity.ok(mapOf("itemTypes" to itemTypes))
     }
 
     //해당 목록의 전체 아이템 조회
