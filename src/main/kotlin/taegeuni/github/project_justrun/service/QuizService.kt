@@ -283,10 +283,6 @@ class QuizService(
         val user = userRepository.findById(userId)
             .orElseThrow { NoSuchElementException("사용자를 찾을 수 없습니다.") }
 
-        if (user.userType != UserType.student) {
-            throw IllegalAccessException("학생만 퀴즈 목록을 조회할 수 있습니다.")
-        }
-
         // 2. 승인된 퀴즈 목록 조회
         val quizzes = quizRepository.findApprovedQuizzesByCourseId(courseId)
 
