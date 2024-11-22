@@ -11,9 +11,9 @@ data class Enrollment(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
-    val course: Course
-) {
+    val course: Course,
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val enrollmentId: Int? = null
-}
+)
