@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 import taegeuni.github.project_justrun.dto.PasswordChangeRequest
 import taegeuni.github.project_justrun.dto.PurchaseHistoryResponseItem
+import taegeuni.github.project_justrun.dto.StudentNumberResponse
 import taegeuni.github.project_justrun.dto.UserQuizResponseItem
 import taegeuni.github.project_justrun.exception.ForbiddenException
 import taegeuni.github.project_justrun.service.*
@@ -107,5 +108,19 @@ class UserController(
         val requestingUserId = jwtUtil.getUserIdFromToken(token.substring(7))
         val userQuizzes = quizService.getUserQuizzes(requestingUserId, userId)
         return ResponseEntity.ok(userQuizzes)
+    }
+
+    //내 학번 조회
+    @GetMapping("/profile")
+    fun getStudentNumber(
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<StudentNumberResponse> {
+        // JWT 토큰에서 사용자 ID 추출
+        val userId = jwtUtil.getUserIdFromToken(token.substring(7))
+
+        // 서비스 메서드 호출
+        val response = userService.getStudentNumber(userId)
+
+        return ResponseEntity.ok(response)
     }
 }

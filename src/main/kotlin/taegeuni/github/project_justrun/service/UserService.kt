@@ -2,6 +2,8 @@ package taegeuni.github.project_justrun.service
 
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import taegeuni.github.project_justrun.dto.StudentNumberResponse
 import taegeuni.github.project_justrun.entity.UserType
 import taegeuni.github.project_justrun.repository.UserRepository
 
@@ -36,6 +38,29 @@ class UserService(
             EntityNotFoundException("User not found with id: $userId")
         }
         return user.rewardPoints
+    }
+
+    //내 학번 조회
+    @Transactional(readOnly = true)
+    fun getStudentNumber(userId: Int): StudentNumberResponse {
+        // 사용자 조회
+        val user = userRepository.findById(userId)
+            .orElseThrow { NoSuchElementException("사용자를 찾을 수 없습니다.") }
+
+        // 학생인지 확인
+        if (user.userType != UserType.student) {
+            throw IllegalAccessException("학생만 학번을 조회할 수 있습니다.")
+        }
+
+        // 학번이 있는지 확인 및 로컬 변수에 할당
+        val studentNumber = user.studentNumber
+            ?: throw NoSuchElementException("학번 정보가 없습니다.")
+
+        // 응답 생성
+        return StudentNumberResponse(
+            userId = user.userId,
+            studentNumber = studentNumber
+        )
     }
 }
 
