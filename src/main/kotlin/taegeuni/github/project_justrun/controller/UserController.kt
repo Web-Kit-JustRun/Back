@@ -95,7 +95,7 @@ class UserController(
     fun getRewardPoint(@AuthenticationPrincipal userDetails: UserDetails): ResponseEntity<Map<String, Int>> {
         val userId = userDetails.username.toInt()
         val rewardPoint = userService.getRewardPoints(userId)
-        return ResponseEntity.ok(mapOf("reward_point" to rewardPoint))
+        return ResponseEntity.ok(mapOf("rewardPoint" to rewardPoint))
     }
 
     //자신의 퀴즈 확인

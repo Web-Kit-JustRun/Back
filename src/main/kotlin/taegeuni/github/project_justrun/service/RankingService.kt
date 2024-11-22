@@ -15,9 +15,9 @@ class RankingService(
         return top10Users.mapIndexed { index, user ->
             mapOf(
                 "rank" to index + 1,
-                "user_id" to user.userId,
+                "userId" to user.userId,
                 "name" to user.name,
-                "ranking_points" to user.rankingPoints
+                "rankingPoints" to user.rankingPoints
             )
         }
     }
@@ -28,9 +28,9 @@ class RankingService(
             .mapIndexed { index, student ->
                 mapOf(
                     "rank" to index + 1,
-                    "user_id" to student.userId,
+                    "userId" to student.userId,
                     "name" to student.name,
-                    "ranking_points" to student.rankingPoints
+                    "rankingPoints" to student.rankingPoints
                 )
             }
     }
@@ -40,9 +40,9 @@ class RankingService(
         val userRank = userRepository.findUserRank(user.rankingPoints)
         return mapOf(
             "rank" to userRank,
-            "user_id" to user.userId,
+            "userId" to user.userId,
             "name" to user.name,
-            "ranking_points" to user.rankingPoints
+            "rankingPoints" to user.rankingPoints
         )
     }
 }
