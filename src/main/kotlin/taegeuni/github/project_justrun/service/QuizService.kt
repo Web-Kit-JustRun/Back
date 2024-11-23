@@ -282,27 +282,24 @@ class QuizService(
 
     @Transactional(readOnly = true)
     fun getApprovedQuizzesWithAttemptStatus(userId: Int, courseId: Int): List<QuizListResponseItem> {
-        // 1. 사용자 확인
-        val user = userRepository.findById(userId)
-            .orElseThrow { NoSuchElementException("사용자를 찾을 수 없습니다.") }
 
-        // 2. 승인된 퀴즈 목록 조회
+        // 1. 승인된 퀴즈 목록 조회
         val quizzes = quizRepository.findApprovedQuizzesByCourseId(courseId)
 
-        // 3. 퀴즈 ID 목록 추출
+        // 2. 퀴즈 ID 목록 추출
         val quizIds = quizzes.map { it.quizId }
 
-        // 4. 학생의 제출 기록 조회
+        // 3. 학생의 제출 기록 조회
         val submissions = if (quizIds.isNotEmpty()) {
             quizSubmissionRepository.findByStudentIdAndQuizIds(userId, quizIds)
         } else {
             emptyList()
         }
 
-        // 5. 제출 기록을 맵으로 변환 (quizId를 키로)
+        // 4. 제출 기록을 맵으로 변환 (quizId를 키로)
         val submissionMap = submissions.associateBy { it.quiz.quizId }
 
-        // 6. 응답 생성
+        // 5. 응답 생성
         return quizzes.map { quiz ->
             val submission = submissionMap[quiz.quizId]
             val attemptStatus = when {
