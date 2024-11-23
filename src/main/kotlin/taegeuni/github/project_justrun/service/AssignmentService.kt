@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import taegeuni.github.project_justrun.dto.*
 import taegeuni.github.project_justrun.entity.*
+import taegeuni.github.project_justrun.exception.ForbiddenException
 import taegeuni.github.project_justrun.repository.*
 
 @Service
@@ -11,7 +12,8 @@ class AssignmentService(
     private val assignmentRepository: AssignmentRepository,
     private val assignmentSubmissionRepository: AssignmentSubmissionRepository,
     private val courseRepository: CourseRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val enrollmentRepository: EnrollmentRepository
 ) {
 
     @Transactional(readOnly = true)
@@ -75,5 +77,26 @@ class AssignmentService(
                 dueDate = assignment.dueDate
             )
         }
+    }
+
+    @Transactional(readOnly = true)
+    fun getAssignment(userId: Int, assignmentId: Int): Assignment? {
+        val user = userRepository.findById(userId)
+            .orElseThrow { NoSuchElementException("사용자를 찾을 수 없습니다.") }
+
+        val assignment = assignmentRepository.findTopByAssignmentId(assignmentId)
+            ?: throw NoSuchElementException("과제를 찾을 수 없습니다.")
+
+        val enrollments = enrollmentRepository.findAllByUserUserId(user.userId)
+
+        val isPermitted =  enrollments.any {
+            it.course.courseId == assignment.course.courseId
+        }
+
+        if (!isPermitted) {
+            throw ForbiddenException("권한이 없습니다.")
+        }
+
+        return assignment
     }
 }

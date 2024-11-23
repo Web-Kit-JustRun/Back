@@ -37,7 +37,7 @@ class QuizController(
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 
-    @GetMapping("/courses/{courseId}/quizzes/list")
+    @GetMapping("/courses/{courseId}/quizzes")
     fun getApprovedQuizzesWithAttemptStatus(
         @PathVariable courseId: Int,
         @RequestHeader("Authorization") token: String

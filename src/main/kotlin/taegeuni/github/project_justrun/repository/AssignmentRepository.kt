@@ -13,4 +13,6 @@ interface AssignmentRepository : JpaRepository<Assignment, Int> {
         ORDER BY a.dueDate ASC
     """)
     fun findByCourseId(@Param("courseId") courseId: Int): List<Assignment>
+
+    fun findTopByAssignmentId(@Param("assignmentId") assignmentId: Int): Assignment?
 }
