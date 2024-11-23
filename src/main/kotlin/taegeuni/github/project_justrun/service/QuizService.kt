@@ -101,6 +101,9 @@ class QuizService(
             PendingQuizResponse(
                 quizId = quiz.quizId,
                 title = quiz.title,
+                question = quiz.question,
+                choices = listOf(quiz.choice1, quiz.choice2, quiz.choice3, quiz.choice4),
+                correctChoice = quiz.correctChoice,
                 creationDate = quiz.creationDate,
                 status = quiz.status.name,
                 creator = CreatorInfo(
