@@ -15,6 +15,12 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse)
     }
 
+    @ExceptionHandler(BadRequestException::class)
+    fun handleBadRequestException(e: BadRequestException): ResponseEntity<ErrorResponse> {
+        val errorResponse = ErrorResponse(message = e.message ?: "잘못된 요청입니다.")
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
+    }
+
     @ExceptionHandler(IllegalAccessException::class)
     fun handleIllegalAccessException(ex: IllegalAccessException): ResponseEntity<ErrorResponse> {
         val errorResponse = ErrorResponse(message = ex.message ?: "접근이 거부되었습니다.")
@@ -39,7 +45,6 @@ class GlobalExceptionHandler {
         val errorResponse = ErrorResponse(message = ex.message ?: "서버 에러가 발생했습니다.")
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
     }
-
 
 
 }

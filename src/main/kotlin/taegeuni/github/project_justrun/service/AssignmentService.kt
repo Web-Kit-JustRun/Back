@@ -1,11 +1,25 @@
 package taegeuni.github.project_justrun.service
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import taegeuni.github.project_justrun.dto.*
-import taegeuni.github.project_justrun.entity.*
+import org.springframework.web.multipart.MultipartFile
+import taegeuni.github.project_justrun.dto.AssignmentListResponseItemForProfessor
+import taegeuni.github.project_justrun.dto.AssignmentListResponseItemForStudent
+import taegeuni.github.project_justrun.entity.Assignment
+import taegeuni.github.project_justrun.entity.Course
+import taegeuni.github.project_justrun.entity.User
+import taegeuni.github.project_justrun.entity.UserType
+import taegeuni.github.project_justrun.exception.BadRequestException
 import taegeuni.github.project_justrun.exception.ForbiddenException
 import taegeuni.github.project_justrun.repository.*
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Service
 class AssignmentService(
@@ -15,6 +29,10 @@ class AssignmentService(
     private val userRepository: UserRepository,
     private val enrollmentRepository: EnrollmentRepository
 ) {
+    @Value("\${app.upload.dir}")
+    private val uploadPath: String = "./files"
+
+    private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     @Transactional(readOnly = true)
     fun getAssignmentList(userId: Int, courseId: Int): List<Any> {
@@ -60,7 +78,10 @@ class AssignmentService(
     }
 
 
-    private fun getAssignmentListForProfessor(user: User, course: Course): List<AssignmentListResponseItemForProfessor> {
+    private fun getAssignmentListForProfessor(
+        user: User,
+        course: Course
+    ): List<AssignmentListResponseItemForProfessor> {
         // 1. 사용자가 해당 강의의 교수인지 확인
         if (course.professor.userId != user.userId) {
             throw IllegalAccessException("해당 강의에 대한 접근 권한이 없습니다.")
@@ -81,6 +102,44 @@ class AssignmentService(
 
     @Transactional(readOnly = true)
     fun getAssignment(userId: Int, assignmentId: Int): Assignment? {
+        val assignment = findValidAssignmentByUserIdAndAssignmentId(userId, assignmentId)
+        return assignment
+    }
+
+    fun submitAssignment(file: MultipartFile?, content: String?, assignmentId: Int, userId: Int) {
+        if (file == null && content == null) {
+            throw BadRequestException("파일과 본문 중 하나 이상의 필드는 존재해야 합니다.")
+        }
+        val user = userRepository.findById(userId)
+            .orElseThrow { NoSuchElementException("사용자를 찾을 수 없습니다.") }
+
+        val assignment = findValidAssignmentByUserIdAndAssignmentId(userId, assignmentId)
+
+        if (file != null) {
+            val path = Paths.get(uploadPath, assignment.course.courseName)
+            val currentDateTime = LocalDateTime.now()
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm:ss")
+            val formattedDateTime = currentDateTime.format(formatter)
+            val filename = user.name + "_" + formattedDateTime + "_" + file.originalFilename
+
+            Files.createDirectories(path)
+
+            try {
+                val savedFile = File(path.toRealPath().toString(), filename)
+                file.transferTo(savedFile)
+            } catch (e: Exception) {
+                logger.error("Error while transfer to $filename", e)
+                throw Error("Error on saving file")
+            }
+        }
+
+        //TODO: 과제 실제로 제출하는 로직 작성
+    }
+
+    private fun findValidAssignmentByUserIdAndAssignmentId(
+        userId: Int,
+        assignmentId: Int
+    ): Assignment {
         val user = userRepository.findById(userId)
             .orElseThrow { NoSuchElementException("사용자를 찾을 수 없습니다.") }
 
@@ -89,14 +148,15 @@ class AssignmentService(
 
         val enrollments = enrollmentRepository.findAllByUserUserId(user.userId)
 
-        val isPermitted =  enrollments.any {
+        val isPermitted = enrollments.any {
             it.course.courseId == assignment.course.courseId
         }
 
         if (!isPermitted) {
             throw ForbiddenException("권한이 없습니다.")
         }
-
         return assignment
     }
+
+
 }

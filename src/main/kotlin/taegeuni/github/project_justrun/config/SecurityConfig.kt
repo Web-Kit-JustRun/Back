@@ -45,6 +45,7 @@ class SecurityConfig(
                         "/api/auth/login",
                         "/api/auth/register",
                         "/api/ranking/top",
+                        "/api/assignments/{assignmentId}/submit",
                         "/images/**"
                     ).permitAll()
                     .anyRequest().authenticated()
