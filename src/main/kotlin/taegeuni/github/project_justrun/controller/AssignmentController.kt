@@ -31,7 +31,6 @@ class AssignmentController(
         @PathVariable assignmentId: Int,
         @RequestHeader("Authorization") token: String
     ): ResponseEntity<*> {
-        print(token)
         val userId = jwtUtil.getUserIdFromToken(token.substring(7))
         val assignment = assignmentService.getAssignment(userId, assignmentId)
             ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse("Assignment not found"))
