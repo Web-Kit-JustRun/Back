@@ -268,4 +268,69 @@ class AssignmentService(
         )
     }
 
+    //학생 및 교수가 과제 목록 조회
+    @Transactional(readOnly = true)
+    fun getAssignmentsList(userId: Int, courseId: Int): List<Any> {
+        // 1. 사용자 조회
+        val user = userRepository.findById(userId)
+            .orElseThrow { NoSuchElementException("사용자를 찾을 수 없습니다.") }
+
+        // 2. 강의 조회
+        val course = courseRepository.findById(courseId)
+            .orElseThrow { NoSuchElementException("강의를 찾을 수 없습니다.") }
+
+        // 3. 사용자 타입에 따른 처리
+        return when (user.userType) {
+            UserType.student -> getAssignmentsListForStudent(user, course)
+            UserType.professor -> getAssignmentsListForProfessor(user, course)
+        }
+    }
+
+    private fun getAssignmentsListForStudent(user: User, course: Course): List<AssignmentListItemForStudentDto> {
+        // 1. 해당 강의의 과제 목록 조회
+        val assignments = assignmentRepository.findByCourseId(course.courseId)
+
+        // 2. 과제 ID 목록 생성
+        val assignmentIds = assignments.map { it.assignmentId }
+
+        // 3. 학생의 제출 정보 조회
+        val submissions = assignmentSubmissionRepository.findByAssignmentAssignmentIdInAndStudentUserId(
+            assignmentIds, user.userId
+        ).associateBy { it.assignment.assignmentId }
+
+        // 4. 응답 생성
+        return assignments.map { assignment ->
+            val submission = submissions[assignment.assignmentId]
+            AssignmentListItemForStudentDto(
+                assignmentId = assignment.assignmentId,
+                title = assignment.title,
+                dueDate = assignment.dueDate,
+                score = assignment.maxScore,
+                isSubmitted = submission != null,
+                isGraded = submission?.isScored ?: false,
+                studentScore = submission?.score
+            )
+        }
+    }
+
+    private fun getAssignmentsListForProfessor(user: User, course: Course): List<AssignmentListItemForProfessorDto> {
+        // 1. 사용자가 해당 강의의 교수인지 확인
+        if (course.professor.userId != user.userId) {
+            throw IllegalAccessException("해당 강의에 대한 접근 권한이 없습니다.")
+        }
+
+        // 2. 해당 강의의 과제 목록 조회
+        val assignments = assignmentRepository.findByCourseId(course.courseId)
+
+        // 3. 응답 생성
+        return assignments.map { assignment ->
+            AssignmentListItemForProfessorDto(
+                assignmentId = assignment.assignmentId,
+                title = assignment.title,
+                dueDate = assignment.dueDate,
+                score = assignment.maxScore
+            )
+        }
+    }
+
 }

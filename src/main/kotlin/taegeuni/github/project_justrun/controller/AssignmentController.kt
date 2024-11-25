@@ -132,4 +132,15 @@ class AssignmentController(
         val response = assignmentService.updateAssignment(userId, assignmentId, request)
         return ResponseEntity.ok(response)
     }
+
+    //학생 및 교수가 과제 목록 조회
+    @GetMapping("/courses/{courseId}/assignments_list")
+    fun getAssignmentsList(
+        @PathVariable courseId: Int,
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<List<Any>> {
+        val userId = jwtUtil.getUserIdFromToken(token.substring(7))
+        val assignmentsList = assignmentService.getAssignmentsList(userId, courseId)
+        return ResponseEntity.ok(assignmentsList)
+    }
 }
