@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
-import taegeuni.github.project_justrun.dto.AssignmentCreateRequest
-import taegeuni.github.project_justrun.dto.AssignmentCreateResponse
-import taegeuni.github.project_justrun.dto.AssignmentListResponseItemForProfessor
-import taegeuni.github.project_justrun.dto.AssignmentListResponseItemForStudent
+import taegeuni.github.project_justrun.dto.*
 import taegeuni.github.project_justrun.entity.Assignment
 import taegeuni.github.project_justrun.entity.Course
 import taegeuni.github.project_justrun.entity.User
@@ -214,6 +211,60 @@ class AssignmentService(
         return AssignmentCreateResponse(
             message = "Assignment created successfully.",
             assignmentId = savedAssignment.assignmentId
+        )
+    }
+
+    //교수가 생성한 과제 수정
+    @Transactional
+    fun updateAssignment(
+        userId: Int,
+        assignmentId: Int,
+        request: AssignmentUpdateRequest
+    ): AssignmentUpdateResponse {
+        // 1. 사용자 조회
+        val user = userRepository.findById(userId)
+            .orElseThrow { NoSuchElementException("사용자를 찾을 수 없습니다.") }
+
+        // 2. 과제 조회
+        val assignment = assignmentRepository.findById(assignmentId)
+            .orElseThrow { NoSuchElementException("과제를 찾을 수 없습니다.") }
+
+        // 3. 권한 확인: 해당 과제를 등록한 교수인지 확인
+        if (user.userType != UserType.professor || assignment.course.professor.userId != userId) {
+            throw IllegalAccessException("해당 과제에 대한 수정 권한이 없습니다.")
+        }
+
+        // 4. 필드 업데이트
+        request.title?.let { assignment.title = it }
+        request.content?.let { assignment.content = it }
+        request.maxScore?.let { assignment.maxScore = it }
+        request.dueDate?.let { assignment.dueDate = it }
+
+        // 5. 첨부파일 처리
+        request.attachment?.let { attachmentFile ->
+            if (!attachmentFile.isEmpty) {
+                try {
+                    // 기존 파일 삭제
+                    assignment.attachment?.let { existingFilePath ->
+                        fileStorageService.deleteFile(existingFilePath)
+                    }
+
+                    // 새로운 파일 저장
+                    val attachmentPath = fileStorageService.storeAssignmentFile(attachmentFile)
+                    assignment.attachment = attachmentPath
+                    assignment.attachmentName = attachmentFile.originalFilename
+                } catch (ex: IOException) {
+                    throw RuntimeException("파일 저장 중 오류가 발생했습니다.", ex)
+                }
+            }
+        }
+
+        // 6. 과제 저장
+        assignmentRepository.save(assignment)
+
+        // 7. 응답 생성
+        return AssignmentUpdateResponse(
+            message = "Assignment updated successfully."
         )
     }
 

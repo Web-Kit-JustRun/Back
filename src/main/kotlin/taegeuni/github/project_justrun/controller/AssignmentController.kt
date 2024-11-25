@@ -6,10 +6,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import taegeuni.github.project_justrun.dto.AssignmentCreateRequest
-import taegeuni.github.project_justrun.dto.AssignmentCreateResponse
-import taegeuni.github.project_justrun.dto.AssignmentSubmitResponse
-import taegeuni.github.project_justrun.dto.ErrorResponse
+import taegeuni.github.project_justrun.dto.*
 import taegeuni.github.project_justrun.service.AssignmentService
 import taegeuni.github.project_justrun.util.JwtUtil
 import java.time.LocalDateTime
@@ -99,5 +96,40 @@ class AssignmentController(
 
         val response = assignmentService.createAssignment(userId, courseId, request, attachment)
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
+    }
+
+    //교수가 생성한 과제 수정
+    @PutMapping("/assignments/{assignmentId}", consumes = ["multipart/form-data"])
+    fun updateAssignment(
+        @PathVariable assignmentId: Int,
+        @RequestHeader("Authorization") token: String,
+        @RequestParam(required = false) title: String?,
+        @RequestParam(required = false) content: String?,
+        @RequestParam(required = false) maxScore: Int?,
+        @RequestParam(required = false) dueDate: String?,
+        @RequestParam(required = false) attachment: MultipartFile?
+    ): ResponseEntity<AssignmentUpdateResponse> {
+        val userId = jwtUtil.getUserIdFromToken(token.substring(7))
+
+        // dueDate 파싱
+        val parsedDueDate = dueDate?.let {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+            try {
+                LocalDateTime.parse(it, formatter)
+            } catch (e: DateTimeParseException) {
+                throw IllegalArgumentException("dueDate 형식이 잘못되었습니다. 'YYYY-MM-DDTHH:MM:SS' 형식이어야 합니다.")
+            }
+        }
+
+        val request = AssignmentUpdateRequest(
+            title = title,
+            content = content,
+            maxScore = maxScore,
+            dueDate = parsedDueDate,
+            attachment = attachment
+        )
+
+        val response = assignmentService.updateAssignment(userId, assignmentId, request)
+        return ResponseEntity.ok(response)
     }
 }

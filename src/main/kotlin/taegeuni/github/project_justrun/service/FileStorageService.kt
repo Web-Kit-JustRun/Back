@@ -43,4 +43,11 @@ class FileStorageService(
 
         return targetLocation.absolutePath // 저장된 파일의 절대 경로를 반환합니다.
     }
+    //파일 삭제
+    fun deleteFile(filePath: String) {
+        val file = File(filePath)
+        if (file.exists()) {
+            file.delete()
+        }
+    }
 }

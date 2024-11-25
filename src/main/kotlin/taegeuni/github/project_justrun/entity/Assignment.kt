@@ -15,22 +15,22 @@ data class Assignment(
     val course: Course,
 
     @Column(nullable = false, length = 200)
-    val title: String,
+    var title: String,
 
     @Column(nullable = false)
-    val content: String,
+    var content: String,
 
     @Column(nullable = true, length = 255)
-    val attachment: String? = null,
+    var attachment: String? = null,
 
     @Column(nullable = true, length = 200)
-    val attachmentName: String? = null,
+    var attachmentName: String? = null,
 
     @Column(nullable = false)
-    val dueDate: LocalDateTime,
+    var dueDate: LocalDateTime,
 
     @Column(nullable = false)
-    val maxScore: Int, // 만점 점수 추가
+    var maxScore: Int, // 만점 점수 추가
 
     @Column(nullable = false)
     val creationDate: LocalDateTime = LocalDateTime.now()
