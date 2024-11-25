@@ -30,5 +30,9 @@ data class Assignment(
     val dueDate: LocalDateTime,
 
     @Column(nullable = false)
+    val maxScore: Int, // 만점 점수 추가
+
+    @Column(nullable = false)
     val creationDate: LocalDateTime = LocalDateTime.now()
 )
+

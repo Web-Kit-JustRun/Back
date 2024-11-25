@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
+import taegeuni.github.project_justrun.dto.AssignmentCreateRequest
+import taegeuni.github.project_justrun.dto.AssignmentCreateResponse
 import taegeuni.github.project_justrun.dto.AssignmentListResponseItemForProfessor
 import taegeuni.github.project_justrun.dto.AssignmentListResponseItemForStudent
 import taegeuni.github.project_justrun.entity.Assignment
@@ -16,10 +18,13 @@ import taegeuni.github.project_justrun.exception.BadRequestException
 import taegeuni.github.project_justrun.exception.ForbiddenException
 import taegeuni.github.project_justrun.repository.*
 import java.io.File
+import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 @Service
 class AssignmentService(
@@ -27,7 +32,8 @@ class AssignmentService(
     private val assignmentSubmissionRepository: AssignmentSubmissionRepository,
     private val courseRepository: CourseRepository,
     private val userRepository: UserRepository,
-    private val enrollmentRepository: EnrollmentRepository
+    private val enrollmentRepository: EnrollmentRepository,
+    private val fileStorageService: FileStorageService
 ) {
     @Value("\${app.upload.dir}")
     private val uploadPath: String = "./files"
@@ -158,5 +164,59 @@ class AssignmentService(
         return assignment
     }
 
+    //교수가 과제 생성
+    @Transactional
+    fun createAssignment(
+        userId: Int,
+        courseId: Int,
+        request: AssignmentCreateRequest,
+        attachmentFile: MultipartFile?
+    ): AssignmentCreateResponse {
+        // 1. 사용자 조회
+        val user = userRepository.findById(userId)
+            .orElseThrow { NoSuchElementException("사용자를 찾을 수 없습니다.") }
+
+        // 2. 강의 조회
+        val course = courseRepository.findById(courseId)
+            .orElseThrow { NoSuchElementException("강의를 찾을 수 없습니다.") }
+
+        // 3. 사용자가 해당 강의의 교수인지 확인
+        if (user.userType != UserType.professor || course.professor.userId != user.userId) {
+            throw IllegalAccessException("해당 강의에 대한 접근 권한이 없습니다.")
+        }
+
+        // 4. 첨부파일 처리
+        var attachmentPath: String? = null
+        var attachmentName: String? = null
+
+        if (attachmentFile != null && !attachmentFile.isEmpty) {
+            try {
+                // 파일 저장 서비스 사용
+                attachmentPath = fileStorageService.storeAssignmentFile(attachmentFile)
+                attachmentName = attachmentFile.originalFilename
+            } catch (ex: IOException) {
+                throw RuntimeException("파일 저장 중 오류가 발생했습니다.", ex)
+            }
+        }
+
+        // 5. 과제 생성 및 저장
+        val assignment = Assignment(
+            course = course,
+            title = request.title,
+            content = request.content,
+            attachment = attachmentPath,
+            attachmentName = attachmentName,
+            dueDate = request.dueDate,
+            maxScore = request.maxScore
+        )
+
+        val savedAssignment = assignmentRepository.save(assignment)
+
+        // 6. 응답 생성
+        return AssignmentCreateResponse(
+            message = "Assignment created successfully.",
+            assignmentId = savedAssignment.assignmentId
+        )
+    }
 
 }
